@@ -1,8 +1,4 @@
-language: bash
+language: node_js
 
-sudo: required
-
-services:
--docker
-
-script:
+node_js:
+- "node"
