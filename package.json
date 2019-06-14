@@ -1,0 +1,12 @@
+{
+  "name": "TestCase1",
+  "description": "Hello World validation",
+  "author": "Priyanka Shinde :-)",
+  "version": "0.0.1",
+  "devDependencies": {
+    "jshint": "^2.10.2"
+  },
+  "scripts": {
+    "test": "jshint index.js"
+  }
+}
