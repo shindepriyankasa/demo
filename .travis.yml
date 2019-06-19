@@ -3,33 +3,23 @@ language: node_js
 node_js:
 - "node"
 
+sudo: required
+
 services:
   - docker
 
 env:
   global:
-    - IMAGE_NAME=shindepriyankasa/demo
-    - REGISTRY_USER=shidnepriyankasa
-    - REGISTRY_PASS=Qwest@666
-    - secret: "<something long>"
+    - DOCKER_EMAIL="shindepriyankasa@gmail.com"
+    - DOCKER_USER="shindepriyankasa"
+    - DOCKER_PASS="Qwest@666"
 
-before_script:
-  - version="$(awk '$2 == "DEMO_SERVICE_VERSION" { print $3; exit }' Dockerfile)"
-  - docker pull "$IMAGE_NAME" || true
-script:
-  - docker build --pull --cache-from "$IMAGE_NAME" --tag "$IMAGE_NAME" .
-
-after_script:
-  - docker images
-
-before_deploy:
-  - docker login -u "$REGISTRY_USER" -p "$REGISTRY_PASS"
-  - docker tag "$IMAGE_NAME" "${IMAGE_NAME}:latest"
-  - docker tag "$IMAGE_NAME" "${IMAGE_NAME}:${version}"
-deploy:
-  provider: script
-  script: docker push "${IMAGE_NAME}:latest" && docker push "${IMAGE_NAME}:${version}"
-  on:
-    branch: master  
-  
- 
+after_success:
+  - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build main.go
+  - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+  - export REPO=shindepriyankasa/demo
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  - docker build -f Dockerfile -t $REPO:$COMMIT .
+  - docker tag $REPO:$COMMIT $REPO:$TAG
+  - docker tag $REPO:$COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+  - docker push $REPO
