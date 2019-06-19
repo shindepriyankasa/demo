@@ -11,7 +11,7 @@ RUN apt-get install nginx -y
 
 #
 # Expose port 80
-EXPOSE 80
+EXPOSE 8123
 
 #
 # Last is the actual command to start up NGINX within our Container
